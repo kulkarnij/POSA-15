@@ -1,8 +1,13 @@
 package edu.vandy.model;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Semaphore;
+
+import android.util.Log;
+
+//import mPalantiriMap.Entry;
 
 /**
  * Defines a mechanism that mediates concurrent access to a fixed
@@ -41,6 +46,12 @@ public class PalantiriManager {
         // use a "fair" implementation that mediates concurrent access
         // to the given number of Palantiri.
         // TODO -- you fill in here.
+    	mPalantiriMap = new HashMap<Palantir,Boolean>();
+    	for (Palantir palantir: palantiri) {
+    		mPalantiriMap.put(palantir,true);
+    	}
+    	mAvailablePalantiri = new Semaphore(mPalantiriMap.size(), true);
+    			
     }
 
     /**
@@ -55,7 +66,17 @@ public class PalantiriManager {
         // this key with "false" to indicate the Palantir isn't
         // available and then return that palantir to the client.
         // TODO -- you fill in here.
-
+    	Log.i("DBG","Acquire lock called.");
+    	mAvailablePalantiri.acquireUninterruptibly();
+    	for(HashMap.Entry<Palantir,Boolean> palantir: mPalantiriMap.entrySet()) {
+    		synchronized(mAvailablePalantiri) {
+    			if(palantir.getValue()) {
+    				palantir.setValue(false);
+    				Log.i("DBG", "Aquired Lock");
+    				return palantir.getKey();
+    			}	
+    		}
+    	}
         return null; 
     }
 
@@ -68,6 +89,17 @@ public class PalantiriManager {
         // in a thread-safe manner and release the Semaphore if all
         // works properly.
         // TODO -- you fill in here.
+    	    Log.i("DBG", "Release lock called.");
+    		synchronized(mAvailablePalantiri){
+    			if(mPalantiriMap.containsKey(palantir)) {
+    				if(mPalantiriMap.get(palantir) == false) {
+    					mPalantiriMap.put(palantir, true);
+    					Log.i("DBG","Released Lock");
+    					mAvailablePalantiri.release();
+    				}
+    			}
+    			
+    		}
     }
 
     /*

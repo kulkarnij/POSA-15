@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import android.util.Log;
+
 import edu.vandy.MVP;
 import edu.vandy.utils.Options;
 
@@ -86,6 +88,7 @@ public class PalantiriModel
      */
     @Override
     public Palantir acquirePalantir() {
+    	Log.i("DBG","Model Calling acguire.");
         return mPalantiriManager.acquire();
     }
 

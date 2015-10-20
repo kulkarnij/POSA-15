@@ -80,6 +80,7 @@ public class BeingRunnable
 						
                 // Get a Palantir - this call can block if there are
                 // no available Palantiri.
+                Log.i("DBG","BeingRunnable.run trying to aquire palantir");
                 palantir =
                     mPresenter.getModel().acquirePalantir();
 
